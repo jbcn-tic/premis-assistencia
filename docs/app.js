@@ -88,6 +88,7 @@
       .replace(/\s+/g, ' ')
       .trim()
       .split(' ')
+      .filter(Boolean)
       .map((paraula, i) => {
         if (i > 0 && PARTICULES.has(paraula)) return paraula;
         if (ROMA.test(paraula)) return paraula.toUpperCase();
