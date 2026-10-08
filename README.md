@@ -86,6 +86,10 @@ ho torni a llegir.
 
 ## Desenvolupament
 
+GitHub Pages deixa els fitxers en memòria cau 10 minuts: quan canviïs `app.js`,
+`style.css`, `regles.js` o `config.js`, puja el número `?v=` de `index.html`
+perquè els mòbils agafin la versió nova de seguida.
+
 Sense URL a `config.js` (o amb `?demo` a la URL) l'app funciona en mode demo
 amb dades inventades guardades al navegador.
 
