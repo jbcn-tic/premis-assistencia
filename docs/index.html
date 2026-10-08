@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ca">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#7a0e1e" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Premis d'assistència</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__title">
+        <strong>Premis d'assistència</strong>
+        <span id="subtitol">Setembre 2026</span>
+      </div>
+      <button id="sync" class="sync" type="button" title="Estat de la sincronització">
+        <span class="sync__dot"></span><span id="sync-text">Connectant…</span>
+      </button>
+      <button id="btn-refresca" class="icon-btn" type="button" aria-label="Refresca les dades">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 11a8 8 0 1 0-2.3 5.7" />
+          <path d="M20 4v7h-7" />
+        </svg>
+      </button>
+      <button id="btn-menu" class="icon-btn" type="button" aria-label="Més opcions">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="5" r="1.2" />
+          <circle cx="12" cy="12" r="1.2" />
+          <circle cx="12" cy="19" r="1.2" />
+        </svg>
+      </button>
+    </header>
+
+    <!-- Persones -->
+    <section id="vista-persones" class="vista">
+      <div class="controls">
+        <div class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-4-4" />
+          </svg>
+          <input
+            id="cerca"
+            type="search"
+            placeholder="Cerca per nom, cognom o àlies…"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+        </div>
+        <div class="filters">
+          <select id="filtre" aria-label="Filtra">
+            <option value="">Tothom</option>
+            <option value="pendents">Amb premis per lliurar</option>
+            <option value="musics">Músics</option>
+          </select>
+          <select id="ordre" aria-label="Ordena">
+            <option value="punts">Per punts</option>
+            <option value="nom">Per nom</option>
+          </select>
+        </div>
+        <p id="comptador" class="comptador">–</p>
+      </div>
+      <main id="llista" class="llista" aria-live="polite">
+        <p class="empty">Carregant…</p>
+      </main>
+    </section>
+
+    <!-- Resum -->
+    <section id="vista-resum" class="vista" hidden>
+      <main class="pagina">
+        <p class="nota">
+          Quants premis s'han guanyat i quants falten per lliurar. Toca un premi per veure qui el té
+          pendent.
+        </p>
+        <ul id="resum" class="resum"></ul>
+        <h2 class="titol-seccio">Com es compten els punts</h2>
+        <div id="regles" class="regles"></div>
+      </main>
+    </section>
+
+    <!-- Sorteig -->
+    <section id="vista-sorteig" class="vista" hidden>
+      <main class="pagina">
+        <div class="sorteig-cap">
+          <div>
+            <strong id="sorteig-n">–</strong>
+            <span id="sorteig-text">persones entren al sorteig</span>
+          </div>
+          <button id="btn-copia" class="btn" type="button">Copia la llista</button>
+        </div>
+        <ol id="sorteig" class="sorteig"></ol>
+      </main>
+    </section>
+
+    <nav class="tabs" aria-label="Seccions">
+      <button type="button" data-tab="persones" class="is-active">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="9" cy="8" r="3.5" />
+          <path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" />
+          <path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.3c2.1.7 3.5 2.8 3.5 5.7" />
+        </svg>
+        Persones
+      </button>
+      <button type="button" data-tab="resum">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="8" width="18" height="13" rx="2" />
+          <path d="M12 8v13M3 12.5h18" />
+          <path d="M12 8C10 4 6.5 4 6.5 6.2S10 8 12 8Zm0 0c2-4 5.5-4 5.5-1.8S14 8 12 8Z" />
+        </svg>
+        Premis
+      </button>
+      <button type="button" data-tab="sorteig">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 9V6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3a3 3 0 0 0 0 6v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a3 3 0 0 0 0-6Z" />
+          <path d="M14 5v2M14 11v2M14 17v2" />
+        </svg>
+        Sorteig
+      </button>
+    </nav>
+
+    <!-- Fitxa d'una persona -->
+    <dialog id="fitxa" class="fitxa" aria-labelledby="fitxa-nom">
+      <div class="fitxa__cap">
+        <div>
+          <h2 id="fitxa-nom"></h2>
+          <p id="fitxa-sub"></p>
+        </div>
+        <button type="button" class="tanca" data-tanca aria-label="Tanca">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </button>
+      </div>
+      <div id="fitxa-cos" class="fitxa__cos"></div>
+    </dialog>
+
+    <!-- Menú -->
+    <dialog id="menu" class="fitxa menu" aria-label="Opcions">
+      <div class="fitxa__cap">
+        <div>
+          <h2>Opcions</h2>
+          <p id="menu-carrega"></p>
+        </div>
+        <button type="button" class="tanca" data-tanca aria-label="Tanca">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </button>
+      </div>
+      <div class="fitxa__cos">
+        <button id="btn-csv" type="button" class="opcio">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 15V3M7 8l5-5 5 5" />
+            <path d="M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
+          </svg>
+          <span><strong>Carrega el CSV d'assistència</strong><small>Substitueix les dades actuals. Els premis ja marcats es mantenen.</small></span>
+        </button>
+        <button id="btn-perfil" type="button" class="opcio">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+          </svg>
+          <span><strong>El meu nom</strong><small id="menu-nom"></small></span>
+        </button>
+        <input id="input-csv" type="file" accept=".csv,text/csv" hidden />
+      </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" hidden></div>
+
+    <script src="config.js"></script>
+    <script src="regles.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

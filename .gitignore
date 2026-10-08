@@ -1,0 +1,3 @@
+.DS_Store
+# Les exportacions d'assistència tenen dades personals: no es pugen mai al repo.
+*.csv
