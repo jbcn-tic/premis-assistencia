@@ -59,20 +59,27 @@ Desmarcar un premi demana confirmació, per evitar tocs accidentals.
 > Els CSV tenen dades personals: **no es pugen mai al repositori** (`*.csv` és
 > a `.gitignore`).
 
-## Posar-ho en marxa
+## On és cada cosa
 
-1. Crea un full de càlcul de Google nou (p. ex. "Premis d'assistència 2026").
-2. Al full, **Extensions → Apps Script**. Enganxa-hi `apps-script/Codi.gs` i
-   `apps-script/appsscript.json` (cal activar "Mostra el fitxer de manifest"
-   a la configuració del projecte).
-3. (Recomanat) A **Configuració del projecte → Propietats de l'script**,
-   afegeix `CODI` amb una paraula clau. La web la demanarà el primer cop i la
-   recordarà.
-4. Executa la funció `prepara` un cop per autoritzar-la i crear les pestanyes.
-5. **Implementa → Implementació nova → Aplicació web**, executa com a "Jo" i
-   accés "Qualsevol persona". Copia la URL acabada en `/exec`.
-6. Posa aquesta URL a `docs/config.js` i publica.
-7. Obre la web, menú ⋮ → *Carrega el CSV d'assistència*.
+- **Full de càlcul:** [Premis d'assistència 2026](https://docs.google.com/spreadsheets/d/1t0eee2QVuaMrSPuzZ9sJIB1JrwMg5i2pKX53TFZO8l8/edit)
+  (compte direccio@jovedebarcelona.cat).
+- **Apps Script** vinculat al full: [editor](https://script.google.com/d/130KH9H18vWRrud9HPSUNZmsHExIOi-KUUUX-qlQJZ6zpIXXfh8voHj1Q/edit).
+  Fitxers `Codi` (= `apps-script/Codi.gs`), `appsscript` i `Secret`.
+- **Codi d'accés:** és a `Secret` (constant `CODI_ACCES`), que **només és a Apps
+  Script**, no al repositori. La web el demana el primer cop i el recorda.
+  També es pot posar com a propietat de l'script `CODI`, que té prioritat.
+
+## Canviar el backend
+
+1. Edita `apps-script/Codi.gs` i enganxa'l al fitxer `Codi` de l'editor.
+2. **Implementa → Gestiona les implementacions → ✏️ → Versió: nova** i desa.
+   La URL `/exec` no canvia.
+
+Si es fa un projecte nou des de zero: crea un full, **Extensions → Apps
+Script**, enganxa-hi `Codi.gs`, `appsscript.json` i un fitxer `Secret` amb
+`const CODI_ACCES = '…';`, executa `prepara` per autoritzar-lo, implementa'l com
+a aplicació web (executa com a "Jo", accés "Qualsevol persona") i posa la URL a
+`docs/config.js`.
 
 Si s'edita el full a mà, executa `buidaCache` (o toca ⟳ a la web) perquè l'app
 ho torni a llegir.

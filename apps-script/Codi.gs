@@ -15,8 +15,9 @@
  *   POST {codi, accio:'marca', id, premi, lliurat, per}       → igual que ?a=estat
  *   POST {codi, accio:'carrega', capcalera, files, fitxer, per} → igual que ?a=dades
  *
- * Si la propietat de l'script CODI té valor, totes les peticions l'han de
- * portar (protecció bàsica perquè les dades no siguin públiques).
+ * Si hi ha codi d'accés (propietat de l'script CODI, o la constant CODI_ACCES
+ * d'un fitxer "Secret" que només és a Apps Script, no al repositori), totes les
+ * peticions l'han de portar (protecció bàsica perquè les dades no siguin públiques).
  */
 
 const FULL_ASSISTENCIA = 'Assistència';
@@ -66,19 +67,18 @@ function json_(obj) {
 }
 
 function codiValid_(codi) {
-  const esperat = PropertiesService.getScriptProperties().getProperty('CODI');
+  const esperat =
+    PropertiesService.getScriptProperties().getProperty('CODI') ||
+    (typeof CODI_ACCES !== 'undefined' ? CODI_ACCES : '');
   return !esperat || String(codi || '').trim().toLowerCase() === esperat.trim().toLowerCase();
 }
 
 function full_(nom, capcalera) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sh = ss.getSheetByName(nom);
-  if (!sh) {
-    sh = ss.insertSheet(nom);
-    if (capcalera) {
-      sh.getRange(1, 1, 1, capcalera.length).setValues([capcalera]);
-      sh.setFrozenRows(1);
-    }
+  const sh = ss.getSheetByName(nom) || ss.insertSheet(nom);
+  if (capcalera && sh.getLastRow() === 0) {
+    sh.getRange(1, 1, 1, capcalera.length).setValues([capcalera]);
+    sh.setFrozenRows(1);
   }
   return sh;
 }
