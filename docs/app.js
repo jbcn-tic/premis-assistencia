@@ -612,6 +612,12 @@
         `<strong>${escapa(x.nom)}</strong><small>${c.opten - c.lliurats} per lliurar · ${punts(x.punts)}</small></button>`
       );
     }).join('');
+    // Porta el premi triat a la vista, però només quan canvia (no a cada refresc).
+    if (premiPintat !== premi.id && !els.triaPremi.closest('.vista').hidden) {
+      premiPintat = premi.id;
+      const triat = els.triaPremi.querySelector('[aria-checked="true"]');
+      els.triaPremi.scrollLeft = triat.offsetLeft - els.triaPremi.offsetLeft - 16;
+    }
     els.estatRepartir.querySelectorAll('button').forEach((b) => {
       b.classList.toggle('is-active', b.dataset.estat === ui.estatRepartir);
     });
@@ -669,6 +675,8 @@
         .join('') +
       '</ul>';
   }
+
+  let premiPintat = null;
 
   function oblidaAcabatsDeMarcar() {
     ui.acabatsDeMarcar.clear();
@@ -795,7 +803,6 @@
     desaUi();
     oblidaAcabatsDeMarcar();
     renderRepartir();
-    b.scrollIntoView({ inline: 'nearest', block: 'nearest' });
   });
 
   els.estatRepartir.addEventListener('click', (e) => {
