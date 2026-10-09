@@ -917,6 +917,142 @@ details.detall li span:last-child {
   min-height: 52px;
 }
 
+/* ---------- Repartir ---------- */
+
+.xips {
+  display: flex;
+  gap: 6px;
+  margin: 0 -16px;
+  padding: 0 16px 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.xips::-webkit-scrollbar {
+  display: none;
+}
+
+.xip {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.xip strong {
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.xip small {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.xip[aria-checked='true'] {
+  background: var(--grana);
+  border-color: var(--grana);
+  color: #fff;
+}
+
+.xip[aria-checked='true'] small {
+  color: rgb(255 255 255 / 0.8);
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 3px;
+  border-radius: 12px;
+  background: var(--line);
+}
+
+.segmented button {
+  border: 0;
+  border-radius: 9px;
+  padding: 7px 4px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.segmented button.is-active {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.progress__bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.progress__bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--ok);
+  transition: width 0.3s;
+}
+
+#repartir-text {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fila .check {
+  border-color: var(--pend);
+}
+
+.fila.is-ok {
+  background: var(--ok-bg);
+}
+
+.fila.is-ok .check {
+  border-color: var(--ok);
+  background: var(--ok);
+  color: #fff;
+}
+
+.fila.is-ok .fila__nom {
+  color: var(--ok);
+}
+
+.fila.is-pendent-envio .check {
+  opacity: 0.6;
+}
+
+.fila__punts {
+  flex: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Pestanyes ---------- */
 
 .tabs {
@@ -926,7 +1062,7 @@ details.detall li span:last-child {
   bottom: 0;
   z-index: 10;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   height: calc(var(--tabs-h) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--surface);

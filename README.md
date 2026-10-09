@@ -9,7 +9,13 @@ tothom veu els canvis en pocs segons.
   premis per lliurar, músics, per premi, sorteig) i ordre per punts o per nom.
   En tocar una persona s'obre la fitxa: punts, premis guanyats i per guanyar,
   i el detall de cada esdeveniment. Toca un premi per marcar-lo com a lliurat.
+- **Repartir** — per a qui reparteix un premi concret: tries el premi (enganxina,
+  beguda…) i només surt qui hi opta, amb cercador i filtre per lliurar /
+  lliurats / tots. Un toc a la fila el marca com a lliurat; les files marcades
+  es queden a la vista fins que canvies de filtre, perquè la llista no es mogui
+  sota el dit.
 - **Premis** — quants se n'han guanyat i quants falten per lliurar de cada un.
+  Tocant-ne un s'obre *Repartir* amb aquell premi.
 - **Sorteig** — qui hi entra, amb un botó per copiar la llista.
 
 ## Regles

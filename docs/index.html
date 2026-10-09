@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow" />
     <title>Premis d'assistència</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="style.css?v=3" />
+    <link rel="stylesheet" href="style.css?v=4" />
   </head>
   <body>
     <header class="topbar">
@@ -68,6 +68,37 @@
       </main>
     </section>
 
+    <!-- Repartir: una persona reparteix un premi concret -->
+    <section id="vista-repartir" class="vista" hidden>
+      <div class="controls">
+        <div id="tria-premi" class="xips" role="radiogroup" aria-label="Premi que reparteixes"></div>
+        <div class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-4-4" />
+          </svg>
+          <input
+            id="cerca-repartir"
+            type="search"
+            placeholder="Cerca qui ve a buscar el premi…"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+        </div>
+        <div id="estat-repartir" class="segmented" role="tablist">
+          <button type="button" data-estat="pendents" class="is-active">Per lliurar</button>
+          <button type="button" data-estat="lliurats">Lliurats</button>
+          <button type="button" data-estat="">Tots</button>
+        </div>
+        <div class="progress">
+          <div class="progress__bar"><span id="repartir-fill"></span></div>
+          <span id="repartir-text">–</span>
+        </div>
+      </div>
+      <main id="llista-repartir" class="llista" aria-live="polite"></main>
+    </section>
+
     <!-- Resum -->
     <section id="vista-resum" class="vista" hidden>
       <main class="pagina">
@@ -103,6 +134,14 @@
           <path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.3c2.1.7 3.5 2.8 3.5 5.7" />
         </svg>
         Persones
+      </button>
+      <button type="button" data-tab="repartir">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4" y="4" width="16" height="17" rx="2" />
+          <path d="M9 2.5h6v3H9z" />
+          <path d="m8.5 13 2.5 2.5 4.5-5" />
+        </svg>
+        Repartir
       </button>
       <button type="button" data-tab="resum">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -167,8 +206,8 @@
 
     <div id="toast" class="toast" role="status" hidden></div>
 
-    <script src="config.js?v=3"></script>
-    <script src="regles.js?v=3"></script>
-    <script src="app.js?v=3"></script>
+    <script src="config.js?v=4"></script>
+    <script src="regles.js?v=4"></script>
+    <script src="app.js?v=4"></script>
   </body>
 </html>

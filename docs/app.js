@@ -30,6 +30,12 @@
     sync: $('#sync'),
     syncText: $('#sync-text'),
     toast: $('#toast'),
+    triaPremi: $('#tria-premi'),
+    cercaRepartir: $('#cerca-repartir'),
+    estatRepartir: $('#estat-repartir'),
+    llistaRepartir: $('#llista-repartir'),
+    repartirFill: $('#repartir-fill'),
+    repartirText: $('#repartir-text'),
   };
 
   const guardat = llegeix('pa-ui', {});
@@ -39,6 +45,13 @@
     filtre: '',
     cerca: '',
     fitxa: null, // id de la persona oberta
+    // Vista Repartir
+    premi: R.PREMIS.some((x) => x.id === guardat.premi) ? guardat.premi : R.PREMIS[0].id,
+    estatRepartir: 'pendents',
+    cercaRepartir: '',
+    // Marcats des de Repartir: es queden a la llista encara que el filtre sigui
+    // "Per lliurar", perquè la fila no desaparegui sota el dit.
+    acabatsDeMarcar: new Set(),
   };
 
   let dades = null;
@@ -572,10 +585,100 @@
     }
   }
 
+  /* ---------- Vista: repartir un premi ---------- */
+
+  function renderRepartir() {
+    if (!dades) return;
+    const premi = R.PREMIS.find((x) => x.id === ui.premi);
+    const consulta = normalitza(ui.cercaRepartir);
+
+    // Opten al premi els qui hi arriben; també surt qui el té marcat encara que ja no hi arribi.
+    const opten = [];
+    const comptes = Object.fromEntries(R.PREMIS.map((x) => [x.id, { opten: 0, lliurats: 0 }]));
+    for (const p of persones) {
+      for (const x of R.PREMIS) {
+        const m = marcaDe(p.id, x.id);
+        if (p.punts < x.punts && !m) continue;
+        comptes[x.id].opten++;
+        if (m) comptes[x.id].lliurats++;
+        if (x.id === premi.id) opten.push({ p, m });
+      }
+    }
+
+    els.triaPremi.innerHTML = R.PREMIS.map((x) => {
+      const c = comptes[x.id];
+      return (
+        `<button type="button" class="xip" role="radio" aria-checked="${x.id === premi.id}" data-premi="${x.id}">` +
+        `<strong>${escapa(x.nom)}</strong><small>${c.opten - c.lliurats} per lliurar · ${punts(x.punts)}</small></button>`
+      );
+    }).join('');
+    els.estatRepartir.querySelectorAll('button').forEach((b) => {
+      b.classList.toggle('is-active', b.dataset.estat === ui.estatRepartir);
+    });
+
+    const c = comptes[premi.id];
+    els.repartirText.textContent = `${c.lliurats} / ${c.opten} lliurats`;
+    els.repartirFill.style.width = c.opten ? (c.lliurats / c.opten) * 100 + '%' : '0';
+
+    const visibles = opten
+      .filter(({ p, m }) => {
+        if (consulta && !p.cercable.includes(consulta)) return false;
+        if (ui.estatRepartir === 'pendents') return !m || ui.acabatsDeMarcar.has(p.id);
+        if (ui.estatRepartir === 'lliurats') return !!m;
+        return true;
+      })
+      .sort((a, b) => perNom(a.p, b.p));
+
+    if (!visibles.length) {
+      els.llistaRepartir.innerHTML = `<p class="empty">${
+        consulta
+          ? 'Ningú coincideix amb la cerca.'
+          : ui.estatRepartir === 'pendents' && c.opten
+            ? `Ja s'han lliurat tots els premis de ${escapa(premi.nom.toLowerCase())}.`
+            : ui.estatRepartir === 'lliurats'
+              ? 'Encara no se n\'ha lliurat cap.'
+              : 'Ningú hi arriba encara.'
+      }</p>`;
+      return;
+    }
+
+    els.llistaRepartir.innerHTML =
+      '<ul>' +
+      visibles
+        .map(({ p, m }) => {
+          const meta = [];
+          if (p.aliesVisible) meta.push(`<span>${ressalta(p.aliesVisible, consulta)}</span>`);
+          if (p.music) meta.push(`<span class="etiqueta etiqueta--music">${icona.music}Músic</span>`);
+          if (m) {
+            meta.push(
+              `<span>${
+                m.pendent ? 'Enviant…' : `✓ ${m.per ? escapa(m.per) + ' · ' : ''}${dataHora(m.t)}`
+              }</span>`,
+            );
+          }
+          if (m && p.punts < premi.punts) meta.push('<span>ja no hi arriba</span>');
+          return (
+            `<li><button type="button" class="fila${m ? ' is-ok' : ''}${m && m.pendent ? ' is-pendent-envio' : ''}" ` +
+            `data-id="${escapa(p.id)}" aria-pressed="${!!m}">` +
+            `<span class="check">${icona.check}</span>` +
+            `<span class="fila__cos"><span class="fila__nom">${ressalta(p.nomVisible, consulta)}</span>` +
+            (meta.length ? `<span class="fila__meta">${meta.join('')}</span>` : '') +
+            `</span><span class="fila__punts">${punts(p.punts)}</span></button></li>`
+          );
+        })
+        .join('') +
+      '</ul>';
+  }
+
+  function oblidaAcabatsDeMarcar() {
+    ui.acabatsDeMarcar.clear();
+  }
+
   /* ---------- Render general ---------- */
 
   function render() {
     if (ui.tab === 'persones') renderPersones();
+    if (ui.tab === 'repartir') renderRepartir();
     if (ui.tab === 'resum') renderResum();
     if (ui.tab === 'sorteig') renderSorteig();
     if (els.fitxa.open) renderFitxa();
@@ -590,9 +693,13 @@
     });
   }
 
+  function desaUi() {
+    desa('pa-ui', { tab: ui.tab, ordre: ui.ordre, premi: ui.premi });
+  }
+
   function canviaPestanya(tab) {
     ui.tab = tab;
-    desa('pa-ui', { tab: ui.tab, ordre: ui.ordre });
+    desaUi();
     pintaPestanyes();
     render();
     window.scrollTo(0, 0);
@@ -656,7 +763,7 @@
 
   els.ordre.addEventListener('change', () => {
     ui.ordre = els.ordre.value;
-    desa('pa-ui', { tab: ui.tab, ordre: ui.ordre });
+    desaUi();
     renderPersones();
   });
 
@@ -674,10 +781,58 @@
   els.resum.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-premi]');
     if (!b) return;
-    ui.filtre = 'p:' + b.dataset.premi;
-    ui.cerca = els.cerca.value = '';
-    ompleFiltre();
-    canviaPestanya('persones');
+    ui.premi = b.dataset.premi;
+    ui.estatRepartir = 'pendents';
+    ui.cercaRepartir = els.cercaRepartir.value = '';
+    oblidaAcabatsDeMarcar();
+    canviaPestanya('repartir');
+  });
+
+  els.triaPremi.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-premi]');
+    if (!b || b.dataset.premi === ui.premi) return;
+    ui.premi = b.dataset.premi;
+    desaUi();
+    oblidaAcabatsDeMarcar();
+    renderRepartir();
+    b.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+  });
+
+  els.estatRepartir.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-estat]');
+    if (!b) return;
+    ui.estatRepartir = b.dataset.estat;
+    oblidaAcabatsDeMarcar();
+    renderRepartir();
+  });
+
+  els.cercaRepartir.addEventListener('input', () => {
+    ui.cercaRepartir = els.cercaRepartir.value.trim();
+    renderRepartir();
+  });
+
+  els.llistaRepartir.addEventListener('click', (e) => {
+    const b = e.target.closest('.fila');
+    if (!b) return;
+    const p = perId.get(b.dataset.id);
+    const premi = R.PREMIS.find((x) => x.id === ui.premi);
+    if (!p) return;
+    if (marcaDe(p.id, premi.id)) {
+      if (!confirm(`Desmarcar ${premi.nom.toLowerCase()} com a lliurat a ${p.nomVisible}?`)) return;
+      ui.acabatsDeMarcar.delete(p.id);
+      marca(p.id, premi.id, false);
+      return;
+    }
+    ui.acabatsDeMarcar.add(p.id);
+    marca(p.id, premi.id, true);
+    if (navigator.vibrate) navigator.vibrate(15);
+    // Si l'has cercat, buida la cerca per trobar el següent ràpidament.
+    if (ui.cercaRepartir) {
+      els.cercaRepartir.value = ui.cercaRepartir = '';
+      oblidaAcabatsDeMarcar();
+      renderRepartir();
+      toast(`✓ ${premi.nom} · ${p.nomVisible}`);
+    }
   });
 
   els.fitxaCos.addEventListener('click', (e) => {
